@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>患者信息录入</title>
+
+    <!-- Include order: first jquery, then opencpu.js, and then your code -->
+    <script src="opencpu/jquery-1.10.2.min.js"></script>
+    <script src="opencpu/opencpu-0.4.js"></script>
+    <script>
+    //init this script when the page has loaded
+    $(document).ready(function(){
+      $("#submitbutton").on("click", function(){
+        //disable the button to prevent multiple clicks
+        $("#submitbutton").attr("disabled", "disabled");
+
+        //read the value for 'myname'
+        var myname = $("#namefield").val();
+
+        //perform the request
+        var req = ocpu.rpc("hello", {
+          myname : myname
+        }, function(output){
+          $("#output").text(output.message);
+        });
+
+        //if R returns an error, alert the error message
+        req.fail(function(){
+          alert("Server error: " + req.responseText);
+        });
+
+        //after request complete, re-enable the button
+        req.always(function(){
+          $("#submitbutton").removeAttr("disabled")
+        });
+      });
+    });
+    </script>
+
+    <style>
+      #output{
+        height: 80px;
+        width: 500px;
+        border: 1px solid gray;
+        padding: 3px;
+      }
+    </style>
+
+  </head>
+
+  <body>
+    <h1>患者信息录入</h1>
+
+    <b>肿瘤原发部位: </b> <input type="text" id="namefield"></br>
+    <b>基因_RAS: </b> <input type="text" id="namefield"></br>
+    <b>基因_BRAF: </b> <input type="text" id="namefield"></br>
+    <b>肝转移: </b> <input type="text" id="namefield"></br>
+    <b>肺转移: </b> <input type="text" id="namefield"></br>
+    <b>KPS评分: </b> <input type="text" id="namefield"></br>
+    <b>中医证型：肝虚: </b> <input type="text" id="namefield"></br>
+    <b>中医证型：肺虚: </b> <input type="text" id="namefield"></br>
+    <b>中医证型：肾虚: </b> <input type="text" id="namefield"></br>
+    <b>中医证型：脾虚: </b> <input type="text" id="namefield"></br>
+    <b>中医临床症状评分总分值: </b> <input type="text" id="namefield"></br>
+    <b>近3个月主症评分总分: </b> <input type="text" id="namefield"></br>
+    <b>症状妨碍生活评分总分: </b> <input type="text" id="namefield"></br>
+
+    <button id="submitbutton" type="button">确定</button>
+
+    <p id="output"></p>
+
+    <br />
+
+  </body>
+</html>
