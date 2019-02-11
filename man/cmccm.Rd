@@ -1,0 +1,12 @@
+\name{cmccm}
+\alias{cmccm}
+\title{CMCCM}
+\usage{
+cmccmpredfunc(input)
+}
+\description{
+cmccmpredfunc
+}
+\examples{
+cmccmpredfunc(input)
+}
