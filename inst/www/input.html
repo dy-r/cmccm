@@ -38,7 +38,7 @@
           "f12" : $("#f12").val(),
           "f13" : $("#f13").val()
         }] }
-        //alert(input1)
+        console.log(input1)
         //perform the request
         var req = ocpu.rpc("cmccmpredfunc", input1 , function(output){
           alert(output)
@@ -76,7 +76,7 @@
     <tr><td align="center" colspan="2"><h2>患者信息录入</h2></td></tr>
     <tr>
       <td align="right">肿瘤原发部位</td>
-      <td align="left"><select id="f1"><option value="1">左半肠</option><option value="0">左半肠</option></select></td>
+      <td align="left"><select id="f1"><option value="1">左半肠</option><option value="0">右半肠</option></select></td>
     </tr>
     <tr>
       <td align="right">基因_RAS</td>
