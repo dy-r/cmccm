@@ -1,14 +1,25 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta charset="utf-8">
+
   <title>患者信息录入</title>
 
   <!-- Include order: first jquery, then opencpu.js, and then your code -->
   <script src="jquery-1.10.2.min.js"></script>
   <script src="opencpu-0.4.js"></script>
   <script>
+  <!--
+    function isNumber(value) {
+      //验证是否为数字
+      var patrn = /^(-)?\d+(\.\d+)?$/;
+      if (patrn.exec(value) == null || value == "") {
+        return false
+      } else {
+        return true
+      }
+    };
+
     //init this script when the page has loaded
     $(document).ready(function(){
       $("#resetbutton").on("click", function(){
@@ -20,43 +31,49 @@
         //disable the button to prevent multiple clicks
         $("#submitbutton").attr("disabled", "disabled");
         $("#output").css('display','none');
+        if (isNumber($('#f6').val()) && isNumber($("#f11").val()) && isNumber($("#f12").val()) && isNumber($("#f13").val())){
+          //read the value for 'myname'
+          //var myname = $("#f1").val();
+          var input1 = { input : [{
+            "f1" : $("#f1").val(),
+            "f2" : $("#f2").val(),
+            "f3" : $("#f3").val(),
+            "f4" : $("#f4").val(),
+            "f5" : $("#f5").val(),
+            "f6" : $("#f6").val(),
+            "f7" : $("#f7").val(),
+            "f8" : $("#f8").val(),
+            "f9" : $("#f9").val(),
+            "f10" : $("#f10").val(),
+            "f11" : $("#f11").val(),
+            "f12" : $("#f12").val(),
+            "f13" : $("#f13").val()
+          }] }
+          console.log(input1)
+          //perform the request
+          var req = ocpu.rpc("cmccmpredfunc", input1 , function(output){
+            alert(output)
+            $("#output").css('display','inline');
+            $("#output").text(output);
+          });
 
-        //read the value for 'myname'
-        //var myname = $("#f1").val();
-        var input1 = { input : [{
-          "f1" : $("#f1").val(),
-          "f2" : $("#f2").val(),
-          "f3" : $("#f3").val(),
-          "f4" : $("#f4").val(),
-          "f5" : $("#f5").val(),
-          "f6" : $("#f6").val(),
-          "f7" : $("#f7").val(),
-          "f8" : $("#f8").val(),
-          "f9" : $("#f9").val(),
-          "f10" : $("#f10").val(),
-          "f11" : $("#f11").val(),
-          "f12" : $("#f12").val(),
-          "f13" : $("#f13").val()
-        }] }
-        console.log(input1)
-        //perform the request
-        var req = ocpu.rpc("cmccmpredfunc", input1 , function(output){
-          alert(output)
-          $("#output").css('display','inline');
-          $("#output").text(output);
-        });
+          //if R returns an error, alert the error message
+          req.fail(function(){
+            alert("Server error: " + req.responseText);
+          });
 
-        //if R returns an error, alert the error message
-        req.fail(function(){
-          alert("Server error: " + req.responseText);
-        });
-
-        //after request complete, re-enable the button
-        req.always(function(){
-          $("#submitbutton").removeAttr("disabled")
-        });
+          //after request complete, re-enable the button
+          req.always(function(){
+            $("#submitbutton").removeAttr("disabled")
+          });
+        } else {
+          $("#submitbutton").removeAttr("disabled");
+          $("#output").css('display','none');
+          alert("请输入所有信息！！")
+        }
       });
     });
+    -->
     </script>
 
   <style>
