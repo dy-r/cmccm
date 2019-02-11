@@ -1,26 +1,49 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>患者信息录入</title>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 
-    <!-- Include order: first jquery, then opencpu.js, and then your code -->
-    <script src="opencpu/jquery-1.10.2.min.js"></script>
-    <script src="opencpu/opencpu-0.4.js"></script>
-    <script>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>患者信息录入</title>
+
+  <!-- Include order: first jquery, then opencpu.js, and then your code -->
+  <script src="jquery-1.10.2.min.js"></script>
+  <script src="opencpu-0.4.js"></script>
+  <script>
     //init this script when the page has loaded
     $(document).ready(function(){
+      $("#resetbutton").on("click", function(){
+        $("#submitbutton").removeAttr("disabled");
+        $("#output").css('display','none');
+        $("#output").text('');
+      });
       $("#submitbutton").on("click", function(){
         //disable the button to prevent multiple clicks
         $("#submitbutton").attr("disabled", "disabled");
+        $("#output").css('display','none');
 
         //read the value for 'myname'
-        var myname = $("#namefield").val();
-
+        //var myname = $("#f1").val();
+        var input1 = { input : [{
+          "f1" : $("#f1").val(),
+          "f2" : $("#f2").val(),
+          "f3" : $("#f3").val(),
+          "f4" : $("#f4").val(),
+          "f5" : $("#f5").val(),
+          "f6" : $("#f6").val(),
+          "f7" : $("#f7").val(),
+          "f8" : $("#f8").val(),
+          "f9" : $("#f9").val(),
+          "f10" : $("#f10").val(),
+          "f11" : $("#f11").val(),
+          "f12" : $("#f12").val(),
+          "f13" : $("#f13").val()
+        }] }
+        //alert(input1)
         //perform the request
-        var req = ocpu.rpc("hello", {
-          myname : myname
-        }, function(output){
-          $("#output").text(output.message);
+        var req = ocpu.rpc("cmccmpredfunc", input1 , function(output){
+          alert(output)
+          $("#output").css('display','inline');
+          $("#output").text(output);
         });
 
         //if R returns an error, alert the error message
@@ -36,7 +59,7 @@
     });
     </script>
 
-    <style>
+  <style>
       #output{
         height: 80px;
         width: 500px;
@@ -45,30 +68,74 @@
       }
     </style>
 
-  </head>
+</head>
 
-  <body>
-    <h1>患者信息录入</h1>
+<body>
+<div align="center">
+  <table>
+    <tr><td align="center" colspan="2"><h2>患者信息录入</h2></td></tr>
+    <tr>
+      <td align="right">肿瘤原发部位</td>
+      <td align="left"><select id="f1"><option value="1">左半肠</option><option value="0">左半肠</option></select></td>
+    </tr>
+    <tr>
+      <td align="right">基因_RAS</td>
+      <td align="left"><select id="f2"><option value="1">KRAS/NRAS突变</option><option value="0">无</option></select></td>
+    </tr>
+    <tr>
+      <td align="right">基因_BRAF</td>
+      <td align="left"><select id="f3"><option value="1">BRAF突变</option><option value="0">无</option></select></td>
+    </tr>
+    <tr>
+      <td align="right">肝转移</td>
+      <td align="left"><select id="f4"><option value="1">有</option><option value="0">没有</option></select></td>
+    </tr>
+    <tr>
+      <td align="right">肺转移</td>
+      <td align="left"><select id="f5"><option value="1">有</option><option value="0">没有</option></select></td>
+    </tr>
+    <tr>
+      <td align="right">KPS评分</td>
+      <td align="left"><input id="f6" type="text" value=""></td>
+    </tr>
+    <tr>
+      <td align="right">中医证型：肝虚</td>
+      <td align="left"><select id="f7"><option value="1">是</option><option value="0">否</option></select></td>
+    </tr>
+    <tr>
+      <td align="right">中医证型：肺虚</td>
+      <td align="left"><select id="f8"><option value="1">是</option><option value="0">否</option></select></td>
+    </tr>
+    <tr>
+      <td align="right">中医证型：肾虚</td>
+      <td align="left"><select id="f9"><option value="1">是</option><option value="0">否</option></select></td>
+    </tr>
+    <tr>
+      <td align="right">中医证型：脾虚</td>
+      <td align="left"><select id="f10"><option value="1">是</option><option value="0">否</option></select></td>
+    </tr>
+    <tr>
+      <td align="right">中医临床症状评分总分值</td>
+      <td align="left"><input id="f11" type="text" value=""></td>
+    </tr>
+    <tr>
+      <td align="right">近3个月主症评分总分</td>
+      <td align="left"><input id="f12" type="text" value=""></td>
+    </tr>
+    <tr>
+      <td align="right">症状妨碍生活评分总分</td>
+      <td align="left"><input id="f13" type="text" value=""></td>
+    </tr>
+    <tr><td align="center" colspan="2">
+      <button id="submitbutton" type="button">确定</button>
+      <button id="resetbutton" type="button">重置</button>
+    </td></tr>
+    <tr><td align="center" colspan="2"><div style="display:none" id="output" align="center"></div></td></tr>
+  </table>
 
-    <b>肿瘤原发部位: </b> <input type="text" id="namefield"></br>
-    <b>基因_RAS: </b> <input type="text" id="namefield"></br>
-    <b>基因_BRAF: </b> <input type="text" id="namefield"></br>
-    <b>肝转移: </b> <input type="text" id="namefield"></br>
-    <b>肺转移: </b> <input type="text" id="namefield"></br>
-    <b>KPS评分: </b> <input type="text" id="namefield"></br>
-    <b>中医证型：肝虚: </b> <input type="text" id="namefield"></br>
-    <b>中医证型：肺虚: </b> <input type="text" id="namefield"></br>
-    <b>中医证型：肾虚: </b> <input type="text" id="namefield"></br>
-    <b>中医证型：脾虚: </b> <input type="text" id="namefield"></br>
-    <b>中医临床症状评分总分值: </b> <input type="text" id="namefield"></br>
-    <b>近3个月主症评分总分: </b> <input type="text" id="namefield"></br>
-    <b>症状妨碍生活评分总分: </b> <input type="text" id="namefield"></br>
+</div>
 
-    <button id="submitbutton" type="button">确定</button>
 
-    <p id="output"></p>
 
-    <br />
-
-  </body>
+</body>
 </html>
