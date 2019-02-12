@@ -11,11 +11,11 @@ cmccmbuildmodel = function(csv_data_path){
   data_model = read.csv(csv_data_path, fileEncoding = 'GBK',stringsAsFactors = F)
 
   # 人群分类
-  data_model$event = ifelse(data_model$死亡日期=='',0,1)
-  data_model$group <- ifelse(data_model$event==1&data_model$IV期生存时间 <= 365,'劣势人群',ifelse((data_model$基因汇总=='野生型'&data_model$IV期生存时间 > 30*30)|
-                                                                                           (data_model$基因汇总=='BRAF突变型'&data_model$IV期生存时间 > 18*30)|
-                                                                                           (data_model$基因汇总=='RAS突变型'&data_model$IV期生存时间 > 24*30)|
-                                                                                           (data_model$基因汇总=='未查'&data_model$IV期生存时间 > 18*30),'优势人群','中间人群'))
+  data_model[,"event"] = ifelse(data_model[,"死亡日期"]=='',0,1)
+  data_model[,"group"] <- ifelse(data_model[,"event"]==1&data_model[,"IV期生存时间"] <= 365,'劣势人群',ifelse((data_model[,"基因汇总"]=='野生型'&data_model[,"IV期生存时间"] > 30*30)|
+                                                                                           (data_model[,"基因汇总"]=='BRAF突变型'&data_model[,"IV期生存时间"] > 18*30)|
+                                                                                           (data_model[,"基因汇总"]=='RAS突变型'&data_model[,"IV期生存时间"] > 24*30)|
+                                                                                           (data_model[,"基因汇总"]=='未查'&data_model[,"IV期生存时间"] > 18*30),'优势人群','中间人群'))
 
   data_model$肿瘤原发部位_左半肠 = ifelse(data_model$肿瘤原发部位汇总=="左半肠",1,0)
   data_model$BRAF突变型 = ifelse(data_model$基因汇总=='BRAF突变型',1,0)
