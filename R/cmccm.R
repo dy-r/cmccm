@@ -17,9 +17,9 @@ cmccmbuildmodel = function(csv_data_path){
                                                                                            (data_model[,"基因汇总"]=='RAS突变型'&data_model[,"IV期生存时间"] > 24*30)|
                                                                                            (data_model[,"基因汇总"]=='未查'&data_model[,"IV期生存时间"] > 18*30),'优势人群','中间人群'))
 
-  data_model$肿瘤原发部位_左半肠 = ifelse(data_model$肿瘤原发部位汇总=="左半肠",1,0)
-  data_model$BRAF突变型 = ifelse(data_model$基因汇总=='BRAF突变型',1,0)
-  data_model$RAS突变型 = ifelse(data_model$基因汇总=='RAS突变型',1,0)
+  data_model[,"肿瘤原发部位_左半肠"] = ifelse(data_model[,"肿瘤原发部位汇总"]=="左半肠",1,0)
+  data_model[,"BRAF突变型"] = ifelse(data_model[,"基因汇总"]=='BRAF突变型',1,0)
+  data_model[,"RAS突变型"] = ifelse(data_model[,"基因汇总"]=='RAS突变型',1,0)
 
 
   #变量处理1-连续变量开根号处理-KPS评分、中医临床症状评分总分值、近3个月主症评分总分、症状妨碍生活评分总分
