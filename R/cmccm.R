@@ -69,10 +69,11 @@ cmccmpredfunc = function(input){
   predmodel.train.new_patient = predict(qda.model,New_patient)
   #predmodel.train.new_patient
   #print(predmodel.train.new_patient)
-  decide = ifelse(predmodel.train.new_patient$class=='优势人群','属于','不属于')
-  result = paste0('此患者属于优势人群概率为：',round(predmodel.train.new_patient$posterior[,2],2),'; ',decide,'优势人群。')
+  #decide = ifelse(predmodel.train.new_patient$class=='优势人群','属于','不属于')
+  #result = paste0('此患者属于优势人群概率为：',round(predmodel.train.new_patient$posterior[,2],2),'; ',decide,'优势人群。')
   #print(result)
-  as.character(result)
+  #as.character(result)
+  predmodel.train.new_patient
 }
 
 testpredict = function(){

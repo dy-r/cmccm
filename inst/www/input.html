@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans">
 <head>
-  <meta charset="utf-8">
-
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
   <title>患者信息录入</title>
+  <link href="css/main.css" rel="stylesheet" type="text/css" />
+  <!--[if IE 8]><link href="css/ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
 
-  <!-- Include order: first jquery, then opencpu.js, and then your code -->
-  <script src="jquery-1.10.2.min.js"></script>
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+  <script type="text/javascript" src="js/plugins/tables/jquery.dataTables.min.js"></script>
+
+  <script type="text/javascript" src="js/files/bootstrap.min.js"></script>
+
   <script src="opencpu-0.4.js"></script>
   <script>
   <!--
@@ -19,38 +25,36 @@
         return true
       }
     };
-
-    //init this script when the page has loaded
-    $(document).ready(function(){
-      $("#resetbutton").on("click", function(){
-        $("#submitbutton").removeAttr("disabled");
-        $("#output").css('display','none');
-        $("#output").text('');
+    function predict(input1) {
+          console.log(input1)
+      $.ajax({
+        type: "post",
+        url: 'http://localhost/ocpu/library/cmccm/R/cmccmpredfunc/json',
+        async: true, // 使用异步方式
+        // 1 需要使用JSON.stringify 否则格式为 a=2&b=3&now=14...
+        // 2 需要强制类型转换，否则格式为 {"a":"2","b":"3"}
+        data: JSON.stringify(input1),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(output,status,xhr) {
+          console.log(output);
+           alert(output[0]);
+           $("#output").css('display','inline');
+           $("#output").text(output[0]);
+        },
+        error: function(xhr,status,error){
+          alert("Server error: " + xhr.responseText);
+        },
+        complete: function(xhr,status){
+          $("#submitbutton").removeAttr("disabled")
+        }// 注意不要在此行增加逗号
       });
-      $("#submitbutton").on("click", function(){
-        //disable the button to prevent multiple clicks
-        $("#submitbutton").attr("disabled", "disabled");
-        $("#output").css('display','none');
-        if (isNumber($('#f6').val()) && isNumber($("#f11").val()) && isNumber($("#f12").val()) && isNumber($("#f13").val())){
-          //read the value for 'myname'
-          //var myname = $("#f1").val();
-          var input1 = { input : [{
-            "f1" : $("#f1").val(),
-            "f2" : $("#f2").val(),
-            "f3" : $("#f3").val(),
-            "f4" : $("#f4").val(),
-            "f5" : $("#f5").val(),
-            "f6" : $("#f6").val(),
-            "f7" : $("#f7").val(),
-            "f8" : $("#f8").val(),
-            "f9" : $("#f9").val(),
-            "f10" : $("#f10").val(),
-            "f11" : $("#f11").val(),
-            "f12" : $("#f12").val(),
-            "f13" : $("#f13").val()
-          }] }
+
+    };
+    function predictocpu(input1) {
           console.log(input1)
           //perform the request
+          ocpu.seturl("//localhost/ocpu/library/cmccm/R")
           var req = ocpu.rpc("cmccmpredfunc", input1 , function(output){
             alert(output)
             $("#output").css('display','inline');
@@ -66,6 +70,52 @@
           req.always(function(){
             $("#submitbutton").removeAttr("disabled")
           });
+    };
+    //init this script when the page has loaded
+    $(document).ready(function(){
+      $("#resetbutton").on("click", function(){
+        $("#submitbutton").removeAttr("disabled");
+        $("#output").css('display','none');
+        $("#output").text('');
+      });
+      $("#submitbutton").on("click", function(){
+        //disable the button to prevent multiple clicks
+        $("#submitbutton").attr("disabled", "disabled");
+        $("#output").css('display','none');
+
+        var inp = {
+            "id" : $("#id").val(),
+            "f1" : $("#f1").val(),
+            "f2" : $("#f2").val(),
+            "f3" : $("#f3").val(),
+            "f4" : $("#f4").val(),
+            "f5" : $("#f5").val(),
+            "f6" : $("#f6").val(),
+            "f7" : $("#f7").val(),
+            "f8" : $("#f8").val(),
+            "f9" : $("#f9").val(),
+            "f10" : $("#f10").val(),
+            "f11" : $("#f11").val(),
+            "f12" : $("#f12").val(),
+            "f13" : $("#f13").val()
+         }
+        var input1 = { input : [inp] }
+        $.post("http://localhost:8081/patient/create1",inp,function(data,status){
+          if (data.code == "1"){
+            predict(input1)
+          }else{
+            alert(data.message)
+            $("#submitbutton").removeAttr("disabled");
+            $("#output").css('display','none');
+          }
+        });
+
+        if (isNumber($('#f6').val()) && isNumber($("#f11").val()) && isNumber($("#f12").val()) && isNumber($("#f13").val())){
+          //read the value for 'myname'
+          //var myname = $("#f1").val();
+
+          //predict(input1)
+
         } else {
           $("#submitbutton").removeAttr("disabled");
           $("#output").css('display','none');
@@ -84,74 +134,103 @@
         padding: 3px;
       }
     </style>
-
 </head>
 
 <body>
-<div align="center">
-  <table>
-    <tr><td align="center" colspan="2"><h2>患者信息录入</h2></td></tr>
-    <tr>
-      <td align="right">肿瘤原发部位</td>
-      <td align="left"><select id="f1"><option value="1">左半肠</option><option value="0">右半肠</option></select></td>
-    </tr>
-    <tr>
-      <td align="right">基因_RAS</td>
-      <td align="left"><select id="f2"><option value="1">KRAS/NRAS突变</option><option value="0">无</option></select></td>
-    </tr>
-    <tr>
-      <td align="right">基因_BRAF</td>
-      <td align="left"><select id="f3"><option value="1">BRAF突变</option><option value="0">无</option></select></td>
-    </tr>
-    <tr>
-      <td align="right">肝转移</td>
-      <td align="left"><select id="f4"><option value="1">有</option><option value="0">没有</option></select></td>
-    </tr>
-    <tr>
-      <td align="right">肺转移</td>
-      <td align="left"><select id="f5"><option value="1">有</option><option value="0">没有</option></select></td>
-    </tr>
-    <tr>
-      <td align="right">KPS评分</td>
-      <td align="left"><input id="f6" type="text" value=""></td>
-    </tr>
-    <tr>
-      <td align="right">中医证型：肝虚</td>
-      <td align="left"><select id="f7"><option value="1">是</option><option value="0">否</option></select></td>
-    </tr>
-    <tr>
-      <td align="right">中医证型：肺虚</td>
-      <td align="left"><select id="f8"><option value="1">是</option><option value="0">否</option></select></td>
-    </tr>
-    <tr>
-      <td align="right">中医证型：肾虚</td>
-      <td align="left"><select id="f9"><option value="1">是</option><option value="0">否</option></select></td>
-    </tr>
-    <tr>
-      <td align="right">中医证型：脾虚</td>
-      <td align="left"><select id="f10"><option value="1">是</option><option value="0">否</option></select></td>
-    </tr>
-    <tr>
-      <td align="right">中医临床症状评分总分值</td>
-      <td align="left"><input id="f11" type="text" value=""></td>
-    </tr>
-    <tr>
-      <td align="right">近3个月主症评分总分</td>
-      <td align="left"><input id="f12" type="text" value=""></td>
-    </tr>
-    <tr>
-      <td align="right">症状妨碍生活评分总分</td>
-      <td align="left"><input id="f13" type="text" value=""></td>
-    </tr>
-    <tr><td align="center" colspan="2">
-      <button id="submitbutton" type="button">确定</button>
-      <button id="resetbutton" type="button">重置</button>
-    </td></tr>
-    <tr><td align="center" colspan="2"><div style="display:none" id="output" align="center"></div></td></tr>
-  </table>
+
+<!-- Fixed top -->
+<div id="top">
+  <div class="fixed">
+    <a href="index.html" title="" class="logo"><img style="height: 33px;" src="img/logo.png" alt="" /></a>
+  </div>
+</div>
+<!-- /fixed top -->
+
+
+<!-- Content container -->
+<div id="container">
+
+  <div align="center">
+    <table>
+      <tr><td align="center" colspan="2"><h2>患者信息录入</h2></td></tr>
+      <tr>
+        <td align="right">病人ID</td>
+        <td align="left"><input id="id" type="text" value=""></td>
+      </tr>
+      <tr>
+        <td align="right">肿瘤原发部位</td>
+        <td align="left"><select id="f1"><option value="1">左半肠</option><option value="0">右半肠</option></select></td>
+      </tr>
+      <tr>
+        <td align="right">基因_RAS</td>
+        <td align="left"><select id="f2"><option value="1">KRAS/NRAS突变</option><option value="0">无</option></select></td>
+      </tr>
+      <tr>
+        <td align="right">基因_BRAF</td>
+        <td align="left"><select id="f3"><option value="1">BRAF突变</option><option value="0">无</option></select></td>
+      </tr>
+      <tr>
+        <td align="right">肝转移</td>
+        <td align="left"><select id="f4"><option value="1">有</option><option value="0">没有</option></select></td>
+      </tr>
+      <tr>
+        <td align="right">肺转移</td>
+        <td align="left"><select id="f5"><option value="1">有</option><option value="0">没有</option></select></td>
+      </tr>
+      <tr>
+        <td align="right">KPS评分</td>
+        <td align="left"><input id="f6" type="text" value=""></td>
+      </tr>
+      <tr>
+        <td align="right">中医证型：肝虚</td>
+        <td align="left"><select id="f7"><option value="1">是</option><option value="0">否</option></select></td>
+      </tr>
+      <tr>
+        <td align="right">中医证型：肺虚</td>
+        <td align="left"><select id="f8"><option value="1">是</option><option value="0">否</option></select></td>
+      </tr>
+      <tr>
+        <td align="right">中医证型：肾虚</td>
+        <td align="left"><select id="f9"><option value="1">是</option><option value="0">否</option></select></td>
+      </tr>
+      <tr>
+        <td align="right">中医证型：脾虚</td>
+        <td align="left"><select id="f10"><option value="1">是</option><option value="0">否</option></select></td>
+      </tr>
+      <tr>
+        <td align="right">中医临床症状评分总分值</td>
+        <td align="left"><input id="f11" type="text" value=""></td>
+      </tr>
+      <tr>
+        <td align="right">近3个月主症评分总分</td>
+        <td align="left"><input id="f12" type="text" value=""></td>
+      </tr>
+      <tr>
+        <td align="right">症状妨碍生活评分总分</td>
+        <td align="left"><input id="f13" type="text" value=""></td>
+      </tr>
+      <tr><td align="center" colspan="2">
+        <button id="submitbutton" type="button">确定</button>
+        <button id="resetbutton" type="button">重置</button>
+      </td></tr>
+      <tr><td align="center" colspan="2"><div style="display:none" id="output" align="center"></div></td></tr>
+    </table>
+
+  </div>
 
 </div>
+<!-- /content container -->
 
+
+<!-- Footer -->
+<div id="footer">
+  <div class="copyrights">Copyright &copy; 中国人民大学统计学院</div>
+  <ul class="footer-links">
+    <li><a href="" title=""><i class="icon-cogs"></i>Contact admin</a></li>
+    <li><a href="" title=""><i class="icon-screenshot"></i>Report bug</a></li>
+  </ul>
+</div>
+<!-- /footer -->
 
 
 </body>
