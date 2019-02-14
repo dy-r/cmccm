@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-    <title>Pannonia - premium responsive admin template by Eugene Kopyov</title>
+    <title>患者列表</title>
     <link href="css/main.css" rel="stylesheet" type="text/css" />
     <!--[if IE 8]><link href="css/ie8.css" rel="stylesheet" type="text/css" /><![endif]-->
 
@@ -16,7 +16,6 @@
     <script>
     //init this script when the page has loaded
     $(document).ready(function(){
-        alert("fetch data");
         fetchData();
     });
     function fetchData() {
@@ -31,7 +30,6 @@
         dataType: "json",
         success: function(output,status,xhr) {
           console.log(output);
-          alert(output);
           createTable(output.data)
         },
         error: function(xhr,status,error){

@@ -16,6 +16,8 @@
   <script src="opencpu-0.4.js"></script>
   <script>
   <!--
+    var patient_host = "http://localhost:8081";
+    var opencpu_host = "http://localhost";
     function isNumber(value) {
       //验证是否为数字
       var patrn = /^(-)?\d+(\.\d+)?$/;
@@ -27,9 +29,10 @@
     };
     function predict(input1) {
           console.log(input1)
+      var id = input1.input[0].id
       $.ajax({
         type: "post",
-        url: 'http://localhost/ocpu/library/cmccm/R/cmccmpredfunc/json',
+        url: opencpu_host + '/ocpu/library/cmccm/R/cmccmpredfunc/json',
         async: true, // 使用异步方式
         // 1 需要使用JSON.stringify 否则格式为 a=2&b=3&now=14...
         // 2 需要强制类型转换，否则格式为 {"a":"2","b":"3"}
@@ -38,9 +41,24 @@
         dataType: "json",
         success: function(output,status,xhr) {
           console.log(output);
-           alert(output[0]);
+          //"中间人群" "优势人群" "劣势人群"
+          //alert(output.class[0]);
+          str = "此患者属于优势人群概率为"
+          str += output.posterior[0][1]
+          if ("优势人群" == output.class[0]){
+            str += "，属于优势人群"
+          }else{
+            str += "，不属于优势人群"
+          }
+          var result = {
+            "中间人群" : output.posterior[0][0],
+            "优势人群" : output.posterior[0][1],
+            "劣势人群" : output.posterior[0][2]
+          }
+          alert(str)
+          updateResult(id,output.class[0],output.posterior[0][1],result)
            $("#output").css('display','inline');
-           $("#output").text(output[0]);
+           $("#output").text(str);
         },
         error: function(xhr,status,error){
           alert("Server error: " + xhr.responseText);
@@ -51,26 +69,36 @@
       });
 
     };
-    function predictocpu(input1) {
-          console.log(input1)
-          //perform the request
-          ocpu.seturl("//localhost/ocpu/library/cmccm/R")
-          var req = ocpu.rpc("cmccmpredfunc", input1 , function(output){
-            alert(output)
-            $("#output").css('display','inline');
-            $("#output").text(output);
-          });
 
-          //if R returns an error, alert the error message
-          req.fail(function(){
-            alert("Server error: " + req.responseText);
-          });
+   function updateResult(id,prediction,probability,result) {
+      $.ajax({
+        type: "put",
+        url: patient_host + '/patient/updateResult',
+        async: true, // 使用异步方式
+        // 1 需要使用JSON.stringify 否则格式为 a=2&b=3&now=14...
+        // 2 需要强制类型转换，否则格式为 {"a":"2","b":"3"}
+        data: { id : id, prediction: prediction, probability:probability, rawResult: JSON.stringify(result)},//JSON.stringify(input1),
+        //contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function(output,status,xhr) {
+          if (output.code == "1"){
+            window.location.href = "list.html"
+          }else{
+            console.log(output);
+          }
 
-          //after request complete, re-enable the button
-          req.always(function(){
-            $("#submitbutton").removeAttr("disabled")
-          });
+
+        },
+        error: function(xhr,status,error){
+          alert("Server error: " + xhr.responseText);
+        },
+        complete: function(xhr,status){
+          $("#submitbutton").removeAttr("disabled")
+        }// 注意不要在此行增加逗号
+      });
+
     };
+
     //init this script when the page has loaded
     $(document).ready(function(){
       $("#resetbutton").on("click", function(){
@@ -78,11 +106,19 @@
         $("#output").css('display','none');
         $("#output").text('');
       });
+      $("#list").on("click", function(){
+        window.location.href = "list.html"
+      });
       $("#submitbutton").on("click", function(){
         //disable the button to prevent multiple clicks
         $("#submitbutton").attr("disabled", "disabled");
         $("#output").css('display','none');
 
+        if (isNumber($('#f6').val()) && isNumber($("#f11").val()) && isNumber($("#f12").val()) && isNumber($("#f13").val())){
+          //read the value for 'myname'
+          //var myname = $("#f1").val();
+
+          //predict(input1)
         var inp = {
             "id" : $("#id").val(),
             "f1" : $("#f1").val(),
@@ -100,21 +136,37 @@
             "f13" : $("#f13").val()
          }
         var input1 = { input : [inp] }
-        $.post("http://localhost:8081/patient/create1",inp,function(data,status){
+        $.post(patient_host+"/patient/create",inp,function(data,status){
           if (data.code == "1"){
             predict(input1)
           }else{
-            alert(data.message)
-            $("#submitbutton").removeAttr("disabled");
-            $("#output").css('display','none');
+            if ("data exists" == data.message){
+              if (confirm('数据已存在，是否需要更新数据?')){
+                $.ajax({
+                  type: "put",
+                  url:patient_host + "/patient/update",
+                  data: inp,
+                  success:function(data,status){
+                    if (data.code == "1"){
+                      predict(input1)
+                    }else{
+                      alert(data.message)
+                    }
+                  },
+                  error: function(xhr,status,error){
+                    alert("Server error: " + xhr.responseText);
+                  }
+                })
+              }
+            }else{
+              alert(data.message)
+              $("#output").css('display','none');
+            }
+
           }
         });
+        $("#submitbutton").removeAttr("disabled");
 
-        if (isNumber($('#f6').val()) && isNumber($("#f11").val()) && isNumber($("#f12").val()) && isNumber($("#f13").val())){
-          //read the value for 'myname'
-          //var myname = $("#f1").val();
-
-          //predict(input1)
 
         } else {
           $("#submitbutton").removeAttr("disabled");
@@ -212,6 +264,7 @@
       <tr><td align="center" colspan="2">
         <button id="submitbutton" type="button">确定</button>
         <button id="resetbutton" type="button">重置</button>
+        <button id="list" type="button">返回患者列表</button>
       </td></tr>
       <tr><td align="center" colspan="2"><div style="display:none" id="output" align="center"></div></td></tr>
     </table>
