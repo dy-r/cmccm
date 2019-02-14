@@ -47,16 +47,26 @@
 	    console.log(data);
 	    var str = "";
 	    for(var i=0; i < data.length; i++) {
+	        var f1 = "左半肠"
+	        var zyzx = ""
+	        var f3
+	        var f4
+	        if (data[i].f1 == 0){f1 = "右半肠"}
+	        if (data[i].f7 == 1){zyzx += "肝虚/"}
+	        if (data[i].f8 == 0){zyzx += "肺虚/"}
+	        if (data[i].f9 == 0){zyzx += "肾虚/"}
+	        if (data[i].f10 == 0){zyzx += "脾虚/"}
+
 	        str += "<tr>";
-	    	str += "<td>" + data[i].id + "</td>";
-	    	str += "<td>" + data[i].f1 + "</td>";
-	    	str += "<td>" + data[i].f2 + "</td>";
-	    	str += "<td>" + data[i].f3 + "</td>";
-	    	str += "<td>" + data[i].f4 + "</td>";
+	    	str += "<td id='id_"+i+"'>" + data[i].id + "</td>";
+	    	str += "<td id='f1_"+i+"'>" + f1 + "</td>";
+	    	str += "<td>" + zyzx + "</td>";
+	    	str += "<td>" + data[i].f11 + "</td>";
+	    	str += "<td>" + data[i].prediction + "</td>";
 	    	str += '<td><ul class="navbar-icons">';
-	    	str += '<li><a href="#" class="tip" title="详情"><i class="icon-search"></i></a></li>';
-	    	str += '<li><a href="#" class="tip" title="评估"><i class="icon-reorder"></i></a></li>';
-	    	str += '<li><a href="#" class="tip" title="修改"><i class="icon-cogs"></i></a></li>';
+	    	//str += '<li><a href="#" class="tip" title="详情"><i class="icon-search"></i></a></li>';
+	    	//str += '<li><a href="#" class="tip" title="评估"><i class="icon-reorder"></i></a></li>';
+	    	//str += '<li><a href="#" class="tip" title="修改"><i class="icon-cogs"></i></a></li>';
 	    	str += "</ul></td>";
 	        str += "</tr>";
 	    }
