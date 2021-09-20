@@ -1,0 +1,12 @@
+\name{cmccm_2group}
+\alias{cmccm_2group}
+\title{CMCCM_2group}
+\usage{
+predictfunc(input)
+}
+\description{
+predictfunc
+}
+\examples{
+predictfunc(input)
+}
